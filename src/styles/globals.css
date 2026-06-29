@@ -1,0 +1,80 @@
+/*
+ * Cầu Tre Một Nét — design tokens (from DESIGN.md §7).
+ * All UI should reference these variables so the look can be retuned
+ * by editing this file alone.
+ */
+:root {
+  /* surfaces */
+  --rice-paper: #f5ecd7;
+  --paper-warm: #efe3c4;
+  --cream-card: #fdf6ea;
+  --input-background: #fffaf0;
+
+  /* text */
+  --ink-dark: #2a2418;
+  --body-text: #4a4232;
+  --pencil-gray: #8a7d65;
+
+  /* accents */
+  --orange-cta: #e87432;
+  --orange-cta-edge: #b85a22;
+  --mascot-yellow: #f0b840;
+  --bamboo-green: #6b8e3d;
+  --leaf-deep: #4c6630;
+  --bamboo-soft: #c8d68a;
+  --earth-brown: #8e4e22;
+  --alert-red: #c23838;
+
+  /* board */
+  --board-water: #cfe7e0;
+  --board-frame: #d9c39a;
+  --board-frame-edge: #b8975f;
+
+  /* radii / spacing */
+  --r-card: 28px;
+  --r-panel: 16px;
+  --r-btn: 10px;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 14px;
+  --space-4: 20px;
+
+  --shadow-panel: 0 10px 30px rgba(72, 48, 20, 0.18), 0 2px 0 rgba(255, 255, 255, 0.6) inset;
+
+  font-family: "Be Vietnam Pro", system-ui, sans-serif;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--rice-paper);
+  color: var(--body-text);
+  font-family: "Be Vietnam Pro", system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+@keyframes ctm-breathe {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-4px) scale(1.03); }
+}
+@keyframes ctm-pop {
+  0% { transform: scale(0.85); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+@keyframes ctm-float {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(14px); }
+}
