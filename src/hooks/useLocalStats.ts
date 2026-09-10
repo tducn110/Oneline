@@ -75,7 +75,7 @@ export function useLocalStats() {
           bestScore: Math.max(prev.bestScore, score),
           lastScore: score,
           totalGames: prev.totalGames + 1,
-          highestLevel: Math.max(prev.highestLevel, Math.min(levelId + 1, 40)),
+          highestLevel: Math.max(prev.highestLevel, Math.min(levelId + 1, 100)),
           completedLevels: prev.completedLevels + (newlyCompleted ? 1 : 0),
           totalStars: prev.totalStars + starsDelta,
           history: [entry, ...prev.history].slice(0, 20),

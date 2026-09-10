@@ -1,6 +1,7 @@
 import { ScreenShell } from "./ScreenShell";
 import { Button } from "../ui/Button";
 import type { GameAudio } from "../../hooks/useGameAudio";
+import { useTranslation } from "react-i18next";
 
 interface SettingsProps {
   audio: GameAudio;
@@ -56,11 +57,22 @@ function Toggle({ label, value, onChange }: { label: string; value: boolean; onC
 }
 
 export function Settings({ audio, onBack }: SettingsProps) {
+  const { t, i18n } = useTranslation();
+  const language = i18n.resolvedLanguage === "en" ? "en" : "vi";
+  const targetLanguage = language === "vi" ? "en" : "vi";
+
   return (
-    <ScreenShell title="Cài đặt" onBack={onBack}>
-      <Toggle label="Nhạc nền" value={audio.musicEnabled} onChange={audio.setMusicEnabled} />
-      <Toggle label="Âm thanh (SFX)" value={audio.sfxEnabled} onChange={audio.setSfxEnabled} />
-      <Button onClick={onBack}>Về game</Button>
+    <ScreenShell title={t("settings.title")} onBack={onBack}>
+      <Toggle label={t("settings.music")} value={audio.musicEnabled} onChange={audio.setMusicEnabled} />
+      <Toggle label={t("settings.sfx")} value={audio.sfxEnabled} onChange={audio.setSfxEnabled} />
+      <Button
+        type="button"
+        onClick={() => void i18n.changeLanguage(targetLanguage)}
+        aria-label={t("settings.language") + ": " + targetLanguage.toUpperCase()}
+      >
+        {t("settings.language")}: {targetLanguage.toUpperCase()}
+      </Button>
+      <Button onClick={onBack}>{t("common.back")}</Button>
     </ScreenShell>
   );
 }

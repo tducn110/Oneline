@@ -6,7 +6,7 @@ export const STORAGE_KEYS = {
   leaderboard: "ctm.leaderboard.v1",
 } as const;
 
-export const TOTAL_LEVELS = 40;
+export const TOTAL_LEVELS = 100;
 
 /** Stars are based on how much help the player needed. */
 export function computeStars(undoCount: number, hintCount: number): number {

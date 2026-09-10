@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { CountrysideBackdrop } from "../components/background/CountrysideBackdrop";
 import { Game } from "../components/game/Game";
 import { Login } from "../components/screens/Login";
@@ -9,10 +9,12 @@ import { useGameAudio } from "../hooks/useGameAudio";
 import { useLocalStats } from "../hooks/useLocalStats";
 import { STORAGE_KEYS } from "../constants/gameConfig";
 import type { Screen } from "../types";
+import { useWinkIntegration } from "../integrations/wink/useWinkIntegration";
 
 export default function App() {
   const audio = useGameAudio();
   const statsApi = useLocalStats();
+  const wink = useWinkIntegration();
 
   const [playerName, setPlayerName] = useState<string>(() => {
     try {
@@ -22,6 +24,21 @@ export default function App() {
     }
   });
   const [screen, setScreen] = useState<Screen>(() => (playerName ? "game" : "login"));
+
+  // If Wink host provides player display name, adopt it automatically
+  useEffect(() => {
+    if (wink.displayName && !playerName) {
+      setPlayerName(wink.displayName);
+      setScreen("game");
+    }
+  }, [wink.displayName, playerName]);
+
+  // Sync mute with Wink host
+  useEffect(() => {
+    if (wink.parentMuted) {
+      audio.setSfxEnabled(false);
+    }
+  }, [wink.parentMuted, audio]);
 
   const enter = (name: string, _isGuest: boolean) => {
     setPlayerName(name);
@@ -34,7 +51,7 @@ export default function App() {
   };
 
   // Resume at the player's highest unlocked level.
-  const resumeLevel = Math.min(statsApi.stats.highestLevel || 1, 40);
+  const resumeLevel = Math.min(statsApi.stats.highestLevel || 1, 100);
 
   return (
     <div

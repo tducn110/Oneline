@@ -14,6 +14,8 @@ import { TOTAL_LEVELS } from "../../constants/gameConfig";
 import type { GameAudio } from "../../hooks/useGameAudio";
 import type { LocalStatsApi } from "../../hooks/useLocalStats";
 import type { Screen } from "../../types";
+import { useWinkIntegration } from "../../integrations/wink/useWinkIntegration";
+import { useRef } from "react";
 
 interface GameProps {
   initialLevelId: number;
@@ -27,15 +29,35 @@ interface GameProps {
 export function Game({ initialLevelId, playerName, audio, statsApi, inputEnabled, onNavigate }: GameProps) {
   const [showLevels, setShowLevels] = useState(false);
   const [recorded, setRecorded] = useState(false);
+  const wink = useWinkIntegration();
+  const roundActiveRef = useRef(false);
 
   const game = useBridgeGame({
     initialLevelId,
     onInvalid: () => audio.playSfx("invalid"),
-    onStart: () => audio.playSfx("tap"),
+    onStart: () => {
+      audio.playSfx("tap");
+      if (!roundActiveRef.current) {
+        wink.gameplayStart();
+        roundActiveRef.current = true;
+      }
+    },
     onMove: () => audio.playSfx("move"),
     onUndo: () => audio.playSfx("undo"),
-    onWin: () => audio.playSfx("win"),
-    onStuck: () => audio.playSfx("lose"),
+    onWin: () => {
+      audio.playSfx("win");
+      if (roundActiveRef.current) {
+        wink.gameplayStop();
+        roundActiveRef.current = false;
+      }
+    },
+    onStuck: () => {
+      audio.playSfx("lose");
+      if (roundActiveRef.current) {
+        wink.gameplayStop();
+        roundActiveRef.current = false;
+      }
+    },
   });
 
   const theme = useMemo(() => themeForLevel(game.levelId), [game.levelId]);
@@ -45,10 +67,12 @@ export function Game({ initialLevelId, playerName, audio, statsApi, inputEnabled
   useEffect(() => {
     if (game.phase === "won" && !recorded) {
       statsApi.recordCompletion(game.levelId, game.stars, game.state.moveCount, game.elapsedMs(), playerName);
+      wink.submitFinalScore({ score: statsApi.stats.bestScore || game.levelId * 100 });
+      wink.track("level_cleared", { level: game.levelId, stars: game.stars });
       setRecorded(true);
     }
     if (game.phase !== "won" && recorded) setRecorded(false);
-  }, [game, playerName, recorded, statsApi]);
+  }, [game, playerName, recorded, statsApi, wink]);
 
   const goLevel = useCallback(
     (id: number) => {
@@ -141,7 +165,7 @@ export function Game({ initialLevelId, playerName, audio, statsApi, inputEnabled
           validStarts={game.validStarts}
           hintEdgeId={game.hintEdgeId}
           theme={theme}
-          disabled={!inputEnabled || game.phase === "won"}
+          disabled={!inputEnabled || wink.hostPaused || game.phase === "won"}
           onTapNode={game.tapNode}
         />
 
