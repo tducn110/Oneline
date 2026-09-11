@@ -10,8 +10,26 @@ import { useLocalStats } from "../hooks/useLocalStats";
 import { STORAGE_KEYS } from "../constants/gameConfig";
 import type { Screen } from "../types";
 import { useWinkIntegration } from "../integrations/wink/useWinkIntegration";
+import { preloadCriticalResources, preloadNonCriticalResources } from "../utils/game-loader";
+import { completeGameLoading, onGameLoadingDismiss, setGameLoadingProgress } from "../utils/loading-controller";
+
 
 export default function App() {
+  // Unified PapaStudio loading screen lifecycle barrier
+  useEffect(() => {
+    setGameLoadingProgress(25);
+    const criticalPromise = preloadCriticalResources((pct) => {
+      setGameLoadingProgress(Math.min(95, pct));
+    });
+    void Promise.allSettled([criticalPromise]).then(() => {
+      completeGameLoading();
+    });
+    const unbind = onGameLoadingDismiss(() => {
+      preloadNonCriticalResources();
+    });
+    return unbind;
+  }, []);
+
   const audio = useGameAudio();
   const statsApi = useLocalStats();
   const wink = useWinkIntegration();
