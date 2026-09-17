@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { RotateCcw, Undo2, Lightbulb } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 interface GameHUDProps {
   levelId: number;
@@ -55,6 +56,7 @@ export function GameHUD({
   onUndo,
   onHint,
 }: GameHUDProps) {
+  const { t } = useTranslation();
   const hudBtn = (label: string, onClick: () => void, disabled: boolean, icon: ReactNode) => (
     <button
       aria-label={label}
@@ -87,14 +89,14 @@ export function GameHUD({
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
       <div style={{ display: "flex", gap: 8 }}>
-        <Stat label="Màn" value={String(levelId)} />
-        <Stat label="Cầu còn lại" value={`${bridgesLeft}/${totalBridges}`} />
-        <Stat label="Tốt nhất" value={bestStars > 0 ? `${bestStars}★` : "—"} />
+        <Stat label={t("game.level", { level: "" }).trim()} value={String(levelId)} />
+        <Stat label={t("game.bridgesLeft")} value={`${bridgesLeft}/${totalBridges}`} />
+        <Stat label={t("game.best")} value={bestStars > 0 ? `${bestStars}★` : "—"} />
       </div>
       <div style={{ display: "flex", gap: 8 }}>
-        {hudBtn("Lùi bước", onUndo, !canUndo, <Undo2 size={16} />)}
-        {hudBtn("Gợi ý", onHint, false, <Lightbulb size={16} />)}
-        {hudBtn("Chơi lại", onReset, false, <RotateCcw size={16} />)}
+        {hudBtn(t("common.undo"), onUndo, !canUndo, <Undo2 size={16} />)}
+        {hudBtn(t("common.hint"), onHint, false, <Lightbulb size={16} />)}
+        {hudBtn(t("common.retry"), onReset, false, <RotateCcw size={16} />)}
       </div>
     </div>
   );

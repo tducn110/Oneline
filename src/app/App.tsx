@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { CountrysideBackdrop } from "../components/background/CountrysideBackdrop";
 import { Game } from "../components/game/Game";
 import { Login } from "../components/screens/Login";
@@ -15,6 +16,7 @@ import { completeGameLoading, onGameLoadingDismiss, setGameLoadingProgress } fro
 
 
 export default function App() {
+  const { t } = useTranslation();
   // Unified PapaStudio loading screen lifecycle barrier
   useEffect(() => {
     setGameLoadingProgress(25);
@@ -108,7 +110,7 @@ export default function App() {
           <div style={{ display: screen === "game" ? "block" : "none" }}>
             <Game
               initialLevelId={resumeLevel}
-              playerName={playerName || "Khách"}
+              playerName={playerName || t("common.guest")}
               audio={audio}
               statsApi={statsApi}
               inputEnabled={screen === "game"}
@@ -119,14 +121,14 @@ export default function App() {
 
         {screen === "dashboard" && (
           <Dashboard
-            playerName={playerName || "Khách"}
+            playerName={playerName || t("common.guest")}
             statsApi={statsApi}
             onPlay={() => setScreen("game")}
             onBack={() => setScreen("game")}
           />
         )}
         {screen === "leaderboards" && (
-          <Leaderboards playerName={playerName || "Khách"} statsApi={statsApi} onBack={() => setScreen("game")} />
+          <Leaderboards playerName={playerName || t("common.guest")} statsApi={statsApi} onBack={() => setScreen("game")} />
         )}
         {screen === "settings" && <Settings audio={audio} onBack={() => setScreen("game")} />}
       </main>

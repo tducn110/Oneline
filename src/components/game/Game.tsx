@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import type { ReactNode } from "react";
+import { useTranslation } from "react-i18next";
 import { LayoutGrid, Trophy, Settings as SettingsIcon, ListTree, Volume2, VolumeX } from "lucide-react";
 import { GameBoard } from "./GameBoard";
 import { GameHUD } from "./GameHUD";
@@ -27,6 +28,7 @@ interface GameProps {
 }
 
 export function Game({ initialLevelId, playerName, audio, statsApi, inputEnabled, onNavigate }: GameProps) {
+  const { t } = useTranslation();
   const [showLevels, setShowLevels] = useState(false);
   const [recorded, setRecorded] = useState(false);
   const wink = useWinkIntegration();
@@ -109,24 +111,24 @@ export function Game({ initialLevelId, playerName, audio, statsApi, inputEnabled
       {/* top action buttons */}
       <div style={{ display: "flex", gap: 8, justifyContent: "space-between" }}>
         <div style={{ display: "flex", gap: 8 }}>
-          <IconButton label="Bảng màn" onClick={() => setShowLevels(true)}>
+          <IconButton label={t("game.levelBoard")} onClick={() => setShowLevels(true)}>
             <ListTree size={18} />
           </IconButton>
-          <IconButton label="Bảng thành tích" onClick={() => onNavigate("dashboard")}>
+          <IconButton label={t("game.dashboard")} onClick={() => onNavigate("dashboard")}>
             <LayoutGrid size={18} />
           </IconButton>
         </div>
         <div style={{ display: "flex", gap: 8 }}>
           <IconButton
-            label={audio.sfxEnabled ? "Tắt âm thanh" : "Bật âm thanh"}
+            label={t("settings.soundToggle")}
             onClick={() => audio.setSfxEnabled(!audio.sfxEnabled)}
           >
             {audio.sfxEnabled ? <Volume2 size={18} /> : <VolumeX size={18} />}
           </IconButton>
-          <IconButton label="Bảng xếp hạng" onClick={() => onNavigate("leaderboards")}>
+          <IconButton label={t("game.leaderboard")} onClick={() => onNavigate("leaderboards")}>
             <Trophy size={18} />
           </IconButton>
-          <IconButton label="Cài đặt" onClick={() => onNavigate("settings")}>
+          <IconButton label={t("settings.title")} onClick={() => onNavigate("settings")}>
             <SettingsIcon size={18} />
           </IconButton>
         </div>
@@ -135,10 +137,10 @@ export function Game({ initialLevelId, playerName, audio, statsApi, inputEnabled
       {/* title */}
       <div style={{ textAlign: "center" }}>
         <h1 style={{ margin: 0, fontSize: 30, fontWeight: 800, color: "var(--ink-dark)", lineHeight: 1.1 }}>
-          Cầu Tre Một Nét
+          {t("game.title")}
         </h1>
         <p style={{ margin: "4px 0 0", fontSize: 13, fontWeight: 600, color: "var(--body-text)" }}>
-          Đi qua mỗi cây cầu đúng 1 lần
+          {t("game.subtitle")}
         </p>
       </div>
 
@@ -147,11 +149,11 @@ export function Game({ initialLevelId, playerName, audio, statsApi, inputEnabled
         <Mascot emoji={theme.mascot} mood={mood} size={62} />
         <div>
           <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--pencil-gray)" }}>
-            Màn {game.levelId} · {game.level.difficulty}
+            {t("game.level", { level: game.levelId })} · {game.level.difficulty}
           </div>
           <div style={{ fontSize: 18, fontWeight: 800, color: "var(--ink-dark)" }}>{game.level.name}</div>
           <div style={{ fontSize: 12, fontWeight: 600, color: "var(--body-text)" }}>
-            {game.state.currentNode === null ? "Chọn điểm bắt đầu" : `${game.bridgesLeft} cầu còn lại`}
+            {game.state.currentNode === null ? t("game.chooseStart") : t("game.bridgesRemaining", { count: game.bridgesLeft })}
           </div>
         </div>
       </div>
@@ -172,29 +174,29 @@ export function Game({ initialLevelId, playerName, audio, statsApi, inputEnabled
         {game.phase === "won" && (
           <Overlay>
             <Stars value={game.stars} size={28} />
-            <h2 style={{ margin: 0, fontSize: 24, fontWeight: 800, color: "var(--ink-dark)" }}>Qua cầu thành công!</h2>
+            <h2 style={{ margin: 0, fontSize: 24, fontWeight: 800, color: "var(--ink-dark)" }}>{t("game.winTitle")}</h2>
             <p style={{ margin: 0, fontSize: 14, fontWeight: 600, color: "var(--body-text)" }}>
-              Bạn hoàn thành Màn {game.levelId}
+              {t("game.winSubtitle", { level: game.levelId })}
             </p>
             <div style={{ display: "flex", flexWrap: "wrap", gap: 8, justifyContent: "center" }}>
               {hasNext && (
-                <Button onClick={() => goLevel(nextLevelId)}>Màn tiếp</Button>
+                <Button onClick={() => goLevel(nextLevelId)}>{t("common.next")}</Button>
               )}
-              <Button variant="secondary" onClick={game.reset}>Chơi lại</Button>
-              <Button variant="secondary" onClick={() => setShowLevels(true)}>Bảng màn</Button>
+              <Button variant="secondary" onClick={game.reset}>{t("common.retry")}</Button>
+              <Button variant="secondary" onClick={() => setShowLevels(true)}>{t("game.levelBoard")}</Button>
             </div>
           </Overlay>
         )}
 
         {game.phase === "stuck" && (
           <Overlay>
-            <h2 style={{ margin: 0, fontSize: 24, fontWeight: 800, color: "var(--alert-red)" }}>Kẹt đường rồi!</h2>
+            <h2 style={{ margin: 0, fontSize: 24, fontWeight: 800, color: "var(--alert-red)" }}>{t("game.stuckTitle")}</h2>
             <p style={{ margin: 0, fontSize: 14, fontWeight: 600, color: "var(--body-text)" }}>
-              Bạn đã hết nước đi hợp lệ
+              {t("game.stuckSubtitle")}
             </p>
             <div style={{ display: "flex", gap: 8 }}>
-              <Button onClick={game.undo}>Lùi bước</Button>
-              <Button variant="secondary" onClick={game.reset}>Chơi lại</Button>
+              <Button onClick={game.undo}>{t("common.undo")}</Button>
+              <Button variant="secondary" onClick={game.reset}>{t("common.retry")}</Button>
             </div>
           </Overlay>
         )}
@@ -215,7 +217,7 @@ export function Game({ initialLevelId, playerName, audio, statsApi, inputEnabled
 
       {showLevels && (
         <Overlay onClose={() => setShowLevels(false)}>
-          <h2 style={{ margin: 0, fontSize: 22, fontWeight: 800, color: "var(--ink-dark)" }}>Bảng màn</h2>
+          <h2 style={{ margin: 0, fontSize: 22, fontWeight: 800, color: "var(--ink-dark)" }}>{t("game.levelBoard")}</h2>
           <div
             style={{
               display: "grid",
@@ -233,7 +235,7 @@ export function Game({ initialLevelId, playerName, audio, statsApi, inputEnabled
               return (
                 <button
                   key={lv.id}
-                  aria-label={`Màn ${lv.id}${unlocked ? "" : " (khóa)"}`}
+                  aria-label={unlocked ? t("game.level", { level: lv.id }) : t("game.levelLocked", { level: lv.id })}
                   disabled={!unlocked}
                   onClick={() => goLevel(lv.id)}
                   style={{
@@ -257,7 +259,7 @@ export function Game({ initialLevelId, playerName, audio, statsApi, inputEnabled
               );
             })}
           </div>
-          <Button variant="secondary" onClick={() => setShowLevels(false)}>Quay lại</Button>
+          <Button variant="secondary" onClick={() => setShowLevels(false)}>{t("common.back")}</Button>
         </Overlay>
       )}
     </div>

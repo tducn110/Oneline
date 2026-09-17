@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { ScreenShell } from "./ScreenShell";
 import type { LocalStatsApi } from "../../hooks/useLocalStats";
 
@@ -23,14 +24,15 @@ const MOCK: Row[] = [
 ];
 
 export function Leaderboards({ playerName, statsApi, onBack }: LeaderboardsProps) {
+  const { t } = useTranslation();
   const me: Row = { name: playerName, score: statsApi.stats.bestScore, you: true };
   const rows = [...MOCK, me].sort((a, b) => b.score - a.score);
 
   return (
-    <ScreenShell title="Xếp hạng" onBack={onBack}>
+    <ScreenShell title={t("leaderboard.title")} onBack={onBack}>
       {statsApi.stats.bestScore === 0 && (
         <p style={{ margin: 0, fontSize: 13, fontWeight: 500, color: "var(--body-text)" }}>
-          Chưa có điểm nào. Chơi một ván để ghi tên lên bảng!
+          {t("leaderboard.empty")}
         </p>
       )}
       <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
@@ -49,7 +51,7 @@ export function Leaderboards({ playerName, statsApi, onBack }: LeaderboardsProps
           >
             <span style={{ fontSize: 16, fontWeight: 800, color: "var(--pencil-gray)", width: 24 }}>{i + 1}</span>
             <span style={{ flex: 1, fontSize: 14, fontWeight: 700, color: "var(--ink-dark)" }}>
-              {r.name} {r.you && <span style={{ fontSize: 11, color: "var(--orange-cta)" }}>(Bạn)</span>}
+              {r.name} {r.you && <span style={{ fontSize: 11, color: "var(--orange-cta)" }}>{t("leaderboard.you")}</span>}
             </span>
             <span style={{ fontSize: 15, fontWeight: 800, color: "var(--ink-dark)" }}>{r.score}</span>
           </div>

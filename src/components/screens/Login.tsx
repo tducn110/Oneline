@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "../ui/Button";
 import { Mascot } from "../game/Mascot";
 
@@ -7,6 +8,7 @@ interface LoginProps {
 }
 
 export function Login({ onEnter }: LoginProps) {
+  const { t } = useTranslation();
   const [name, setName] = useState("");
 
   return (
@@ -29,18 +31,16 @@ export function Login({ onEnter }: LoginProps) {
     >
       <Mascot emoji="🐃" size={90} />
       <div style={{ textAlign: "center" }}>
-        <h1 style={{ margin: 0, fontSize: 28, fontWeight: 800, color: "var(--ink-dark)" }}>Cầu Tre Một Nét</h1>
-        <p style={{ margin: "6px 0 0", fontSize: 13, fontWeight: 600, color: "var(--body-text)" }}>
-          Nhập tên để lưu điểm
-          <br />
-          hoặc chơi khách trên thiết bị này
+        <h1 style={{ margin: 0, fontSize: 28, fontWeight: 800, color: "var(--ink-dark)" }}>{t("game.title")}</h1>
+        <p style={{ margin: "6px 0 0", fontSize: 13, fontWeight: 600, color: "var(--body-text)", whiteSpace: "pre-line" }}>
+          {t("login.prompt")}
         </p>
       </div>
 
       <input
         value={name}
         onChange={(e) => setName(e.target.value)}
-        placeholder="Tên của bạn"
+        placeholder={t("login.placeholder")}
         maxLength={16}
         onKeyDown={(e) => e.key === "Enter" && name.trim() && onEnter(name.trim(), false)}
         style={{
@@ -58,14 +58,14 @@ export function Login({ onEnter }: LoginProps) {
 
       <div style={{ display: "flex", gap: 10, width: "100%" }}>
         <Button style={{ flex: 1 }} disabled={!name.trim()} onClick={() => onEnter(name.trim(), false)}>
-          Chơi ngay
+          {t("common.playNow")}
         </Button>
-        <Button variant="secondary" style={{ flex: 1 }} onClick={() => onEnter("Khách", true)}>
-          Chơi khách
+        <Button variant="secondary" style={{ flex: 1 }} onClick={() => onEnter(t("common.guest"), true)}>
+          {t("common.playGuest")}
         </Button>
       </div>
       <p style={{ margin: 0, fontSize: 11, fontWeight: 500, color: "var(--pencil-gray)", textAlign: "center" }}>
-        Điểm khách vẫn được lưu cục bộ trên thiết bị này.
+        {t("login.note")}
       </p>
     </div>
   );
