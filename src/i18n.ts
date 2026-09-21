@@ -7,6 +7,11 @@ const isSupportedLanguage = (value: string | null): value is SupportedLanguage =
 const getInitialLanguage = (): SupportedLanguage => { if (typeof window === "undefined") return "en"; try { const value = window.localStorage.getItem(LANGUAGE_STORAGE_KEY); return isSupportedLanguage(value) ? value : "en"; } catch { return "en"; } };
 const persistLanguage = (language: string): void => { const normalized = language.split("-")[0]; if (typeof window === "undefined" || !isSupportedLanguage(normalized)) return; try { window.localStorage.setItem(LANGUAGE_STORAGE_KEY, normalized); } catch { /* Optional persistence. */ } };
 
+export const formatNumber = (value: number, lang?: string): string => {
+  const current = lang || i18n.resolvedLanguage || i18n.language || "en";
+  return value.toLocaleString(current.startsWith("vi") ? "vi-VN" : "en-US");
+};
+
 const syncDocumentLang = (lang: string) => {
   if (typeof document !== "undefined" && document.documentElement) {
     document.documentElement.lang = lang;
@@ -161,7 +166,7 @@ void i18n
   .init({
     resources,
     lng: getInitialLanguage(),
-    supportedLngs: ["vi", "en"],
+    supportedLngs: ["en", "vi"],
     fallbackLng: "en",
     interpolation: { escapeValue: false },
   });
